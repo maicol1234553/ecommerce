@@ -1,19 +1,15 @@
 package com.ecommerce.auth.domain.usecase;
 
 import com.ecommerce.auth.domain.model.Usuario;
-import com.ecommerce.auth.domain.model.exceptions.DatosUsuarioInvalidoException;
-import com.ecommerce.auth.domain.model.exceptions.UsuarioNoEncontradoException;
 import com.ecommerce.auth.domain.model.gateway.UsuarioGateway;
-import lombok.RequiredArgsConstructor;
 
-import java.util.Objects;
-import java.util.Optional;
-
-@RequiredArgsConstructor
-//logica de negocio - logica
 public class UsuarioUseCase {
 
     private final UsuarioGateway usuarioGateway;
+
+    public UsuarioUseCase(UsuarioGateway usuarioGateway) {
+        this.usuarioGateway = usuarioGateway;
+    }
 
     public Usuario guardarUsuario(Usuario usuario) {
         validarUsuario(usuario);
@@ -22,53 +18,76 @@ public class UsuarioUseCase {
     }
 
     public Usuario buscarUsuarioPorId(String usuarioId) {
+
         Usuario usuario = usuarioGateway.buscarUsuarioPorId(usuarioId);
 
         if (usuario == null) {
-            throw new UsuarioNoEncontradoException("Usuario no encontrado con id: " + usuarioId);
+            throw new RuntimeException("Usuario no encontrado");
         }
 
         return usuario;
     }
 
     public Usuario actualizarUsuario(Usuario usuario) {
+
         validarUsuario(usuario);
+
         buscarUsuarioPorId(usuario.getIdUsuario());
 
         return usuarioGateway.actualizarUsuario(usuario);
     }
 
     public void eliminarUsuario(String usuarioId) {
+
         buscarUsuarioPorId(usuarioId);
 
         usuarioGateway.eliminarUsuario(usuarioId);
     }
 
     private void validarUsuario(Usuario usuario) {
-        Objects.requireNonNull(usuario, "El usuario es obligatorio");
 
-        Optional.ofNullable(usuario.getNombre())
-                .filter(nombre -> !nombre.isBlank())
-                .orElseThrow(() -> new DatosUsuarioInvalidoException("El nombre es obligatorio"));
+        if (usuario == null) {
+            throw new RuntimeException("El usuario es obligatorio");
+        }
 
-        Optional.ofNullable(usuario.getCorreo())
-                .filter(correo -> correo.contains("@"))
-                .orElseThrow(() -> new DatosUsuarioInvalidoException("El correo no es válido"));
+        if (usuario.getNombre() == null ||
+                usuario.getNombre().isBlank()) {
 
-        Optional.ofNullable(usuario.getPassword())
-                .filter(password -> password.length() >= 8)
-                .orElseThrow(() -> new DatosUsuarioInvalidoException("La contraseña debe tener mínimo 8 caracteres"));
+            throw new RuntimeException("El nombre es obligatorio");
+        }
 
-        Optional.ofNullable(usuario.getRol())
-                .filter(rol -> !rol.isBlank())
-                .orElseThrow(() -> new DatosUsuarioInvalidoException("El rol es obligatorio"));
+        if (usuario.getCorreo() == null ||
+                !usuario.getCorreo().contains("@")) {
 
-        Optional.ofNullable(usuario.getEdad())
-                .filter(edad -> edad >= 18)
-                .orElseThrow(() -> new DatosUsuarioInvalidoException("Usuario menor de edad"));
+            throw new RuntimeException("El correo no es válido");
+        }
 
-        Optional.ofNullable(usuario.getNumeroTelefonico())
-                .filter(telefono -> !telefono.isBlank())
-                .orElseThrow(() -> new DatosUsuarioInvalidoException("El número telefónico es obligatorio"));
+        if (usuario.getPassword() == null ||
+                usuario.getPassword().length() < 8) {
+
+            throw new RuntimeException(
+                    "La contraseña debe tener mínimo 8 caracteres"
+            );
+        }
+
+        if (usuario.getRol() == null ||
+                usuario.getRol().isBlank()) {
+
+            throw new RuntimeException("El rol es obligatorio");
+        }
+
+        if (usuario.getEdad() == null ||
+                usuario.getEdad() < 18) {
+
+            throw new RuntimeException("Usuario menor de edad");
+        }
+
+        if (usuario.getNumeroTelefonico() == null ||
+                usuario.getNumeroTelefonico().isBlank()) {
+
+            throw new RuntimeException(
+                    "El número telefónico es obligatorio"
+            );
+        }
     }
 }
