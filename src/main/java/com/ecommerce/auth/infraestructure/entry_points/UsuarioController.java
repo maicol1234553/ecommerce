@@ -24,11 +24,29 @@ public class UsuarioController {
         Usuario usuario = usuarioMapper.toUsuario(usuarioData);
         Usuario usuarioGuardado = usuarioUseCase.guardarUsuario(usuario);
 
-        if(usuarioGuardado.getIdUsuario() != null){
-            return new ResponseEntity<>(usuarioGuardado, HttpStatus.OK);
-        }
+        return new ResponseEntity<>(usuarioGuardado, HttpStatus.CREATED);
+    }
 
-        return new ResponseEntity<>(usuarioGuardado, HttpStatus.CONFLICT);
+    @GetMapping("/{id}")
+    public ResponseEntity<Usuario> buscarUsuarioPorId(@PathVariable String id){
+        Usuario usuario = usuarioUseCase.buscarUsuarioPorId(id);
+
+        return new ResponseEntity<>(usuario, HttpStatus.OK);
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<Usuario> actualizarUsuario(@RequestBody UsuarioData usuarioData){
+        Usuario usuario = usuarioMapper.toUsuario(usuarioData);
+        Usuario usuarioActualizado = usuarioUseCase.actualizarUsuario(usuario);
+
+        return new ResponseEntity<>(usuarioActualizado, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminarUsuario(@PathVariable String id){
+        usuarioUseCase.eliminarUsuario(id);
+
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 }

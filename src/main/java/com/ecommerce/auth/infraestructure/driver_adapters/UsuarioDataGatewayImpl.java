@@ -10,31 +10,31 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class UsuarioDataGatewayImpl implements UsuarioGateway {
 
-    private final UsuarioDataJpaRepository UsuarioDataJpaRepository ;
+    private final UsuarioDataJpaRepository usuarioDataJpaRepository;
     private final UsuarioMapper usuarioMapper;
 
     @Override
     public Usuario guardarUsuario(Usuario usuario) {
         UsuarioData usuarioMapeado = usuarioMapper.toUsuarioData(usuario);
 
-        Usuario usuarioGuardado = usuarioMapper
-                .toUsuario(UsuarioDataJpaRepository.save(usuarioMapeado));
-
-        return usuarioGuardado;
+        return usuarioMapper.toUsuario(usuarioDataJpaRepository.save(usuarioMapeado));
     }
 
     @Override
     public Usuario buscarUsuarioPorId(String usuarioId) {
-        return null;
+        return usuarioDataJpaRepository.findById(usuarioId)
+                .map(usuarioMapper::toUsuario)
+                .orElse(null);
     }
 
     @Override
     public Usuario actualizarUsuario(Usuario usuario) {
-        return null;
+        return usuarioMapper.toUsuario(
+                usuarioDataJpaRepository.save(usuarioMapper.toUsuarioData(usuario)));
     }
 
     @Override
     public void eliminarUsuario(String usuarioId) {
-
+        usuarioDataJpaRepository.deleteById(usuarioId);
     }
 }

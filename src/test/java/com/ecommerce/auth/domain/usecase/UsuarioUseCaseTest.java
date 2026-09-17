@@ -1,6 +1,8 @@
 package com.ecommerce.auth.domain.usecase;
 
 import com.ecommerce.auth.domain.model.Usuario;
+import com.ecommerce.auth.domain.model.exceptions.DatosUsuarioInvalidoException;
+import com.ecommerce.auth.domain.model.exceptions.UsuarioNoEncontradoException;
 import com.ecommerce.auth.domain.model.gateway.UsuarioGateway;
 import org.junit.jupiter.api.Test;
 
@@ -8,34 +10,32 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class UsuarioUseCaseTest {
 
+    private final UsuarioGateway gateway = new UsuarioGateway() {
+
+        @Override
+        public Usuario guardarUsuario(Usuario usuario) {
+            return usuario;
+        }
+
+        @Override
+        public Usuario buscarUsuarioPorId(String usuarioId) {
+            return null;
+        }
+
+        @Override
+        public Usuario actualizarUsuario(Usuario usuario) {
+            return usuario;
+        }
+
+        @Override
+        public void eliminarUsuario(String usuarioId) {
+        }
+    };
+
+    private final UsuarioUseCase useCase = new UsuarioUseCase(gateway);
+
     @Test
-    void LanzarExcepcion() {
-
-        UsuarioGateway gateway = new UsuarioGateway() {
-
-            @Override
-            public Usuario guardarUsuario(Usuario usuario) {
-                return usuario;
-            }
-
-            @Override
-            public Usuario buscarUsuarioPorId(String usuarioId) {
-                return null;
-            }
-
-            @Override
-            public Usuario actualizarUsuario(Usuario usuario) {
-                return null;
-            }
-
-            @Override
-            public void eliminarUsuario(String usuarioId) {
-            }
-        };
-
-        UsuarioUseCase useCase = new UsuarioUseCase(gateway);
-
-        // Creamos un usuario con el nombre vacío
+    void lanzarExcepcionCuandoLaPasswordEsInvalida() {
         Usuario usuario = new Usuario(
                 "1",
                 "sharik",
@@ -46,11 +46,17 @@ class UsuarioUseCaseTest {
                 "3001234567"
         );
 
-        RuntimeException excepcion = assertThrows(
-                RuntimeException.class,
+        assertThrows(
+                DatosUsuarioInvalidoException.class,
                 () -> useCase.guardarUsuario(usuario)
         );
+    }
 
-        System.out.println("Excepción: " + excepcion.getMessage());
+    @Test
+    void lanzarExcepcionCuandoElUsuarioNoExiste() {
+        assertThrows(
+                UsuarioNoEncontradoException.class,
+                () -> useCase.buscarUsuarioPorId("999")
+        );
     }
 }
