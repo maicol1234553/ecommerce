@@ -7,6 +7,8 @@ public interface UsuarioGateway {
 
     Usuario buscarUsuarioPorId(String usuarioId);
 
+    Usuario buscarUsuarioPorCorreo(String correo);
+
     Usuario actualizarUsuario(Usuario usuario);
 
     void eliminarUsuario(String usuarioId);

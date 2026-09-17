@@ -18,11 +18,12 @@ public class UsuarioData {
 
     private String idUsuario;
     private String nombre;
-    @Column (length = 20, nullable = false)
+    @Column (length = 255, nullable = false, unique = true)
     private String correo;
-    @Column (length = 12, nullable = false, unique = true)
+    @Column(length = 255, nullable = false)
     private String password;
     private String rol;
     private Integer edad;
+    @Column(length = 10, nullable = false)
     private String numeroTelefonico;
 }

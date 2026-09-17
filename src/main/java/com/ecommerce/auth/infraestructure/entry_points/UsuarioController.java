@@ -19,18 +19,17 @@ public class UsuarioController {
     private final UsuarioUseCase usuarioUseCase;
     private final UsuarioMapper usuarioMapper;
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> datosInvalidos(IllegalArgumentException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
     @PostMapping("/save")
     public ResponseEntity<Usuario> saveUsuario(@RequestBody UsuarioData usuarioData){
         Usuario usuario = usuarioMapper.toUsuario(usuarioData);
+        Usuario usuarioGuardado = usuarioUseCase.guardarUsuario(usuario);
 
-        try{
-            Usuario usuarioGuardado = usuarioUseCase.guardarUsuario(usuario);
-            return new ResponseEntity<>(usuarioGuardado, HttpStatus.CREATED);
-        }catch(RuntimeException exception){
-            return new ResponseEntity<>( HttpStatus.BAD_REQUEST);
-        }
-
-
+        return new ResponseEntity<>(usuarioGuardado, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")

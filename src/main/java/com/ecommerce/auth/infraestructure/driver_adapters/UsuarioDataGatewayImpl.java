@@ -28,6 +28,13 @@ public class UsuarioDataGatewayImpl implements UsuarioGateway {
     }
 
     @Override
+    public Usuario buscarUsuarioPorCorreo(String correo) {
+        return usuarioDataJpaRepository.findByCorreo(correo)
+                .map(usuarioMapper::toUsuario)
+                .orElse(null);
+    }
+
+    @Override
     public Usuario actualizarUsuario(Usuario usuario) {
         return usuarioMapper.toUsuario(
                 usuarioDataJpaRepository.save(usuarioMapper.toUsuarioData(usuario)));

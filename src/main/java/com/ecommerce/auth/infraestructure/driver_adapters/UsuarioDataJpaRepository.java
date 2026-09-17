@@ -7,4 +7,5 @@ import java.util.Optional;
 public interface UsuarioDataJpaRepository extends JpaRepository<UsuarioData, String >{
 //consulta de bases de datos
 
+    Optional<UsuarioData> findByCorreo(String correo);
 }
