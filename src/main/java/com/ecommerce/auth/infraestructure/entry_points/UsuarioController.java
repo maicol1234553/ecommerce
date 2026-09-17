@@ -22,9 +22,15 @@ public class UsuarioController {
     @PostMapping("/save")
     public ResponseEntity<Usuario> saveUsuario(@RequestBody UsuarioData usuarioData){
         Usuario usuario = usuarioMapper.toUsuario(usuarioData);
-        Usuario usuarioGuardado = usuarioUseCase.guardarUsuario(usuario);
 
-        return new ResponseEntity<>(usuarioGuardado, HttpStatus.CREATED);
+        try{
+            Usuario usuarioGuardado = usuarioUseCase.guardarUsuario(usuario);
+            return new ResponseEntity<>(usuarioGuardado, HttpStatus.CREATED);
+        }catch(RuntimeException exception){
+            return new ResponseEntity<>( HttpStatus.BAD_REQUEST);
+        }
+
+
     }
 
     @GetMapping("/{id}")

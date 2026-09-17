@@ -22,7 +22,7 @@ public class UsuarioUseCase {
         Usuario usuario = usuarioGateway.buscarUsuarioPorId(usuarioId);
 
         if (usuario == null) {
-            throw new RuntimeException("Usuario no encontrado");
+            throw new NullPointerException("Usuario no encontrado");
         }
 
         return usuario;
@@ -76,8 +76,7 @@ public class UsuarioUseCase {
             throw new RuntimeException("El rol es obligatorio");
         }
 
-        if (usuario.getEdad() == null ||
-                usuario.getEdad() < 18) {
+        if (usuario.getEdad() == null || usuario.getEdad() < 18) {
 
             throw new RuntimeException("Usuario menor de edad");
         }
